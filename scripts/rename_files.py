@@ -1,9 +1,15 @@
+from __future__ import annotations
 import argparse
 import os
 import subprocess
 from typing import Sequence
 from typing import Union
 
+# USAGE
+# python3 rename_files.py path/to/root/dir
+# For some reason this won't work properly in 3.8 but does in 3.10
+
+# Character to search for in file names
 SEARCH_CHAR = ' '
 
 def validate_path(path_str:str) -> str:
@@ -29,35 +35,28 @@ def print_list(file_list:list[str]) -> None:
         print(item)
  
 
-def rename_files(path:str, symbol:str, dry_run:bool) -> None:
+def rename_files(path:str, symbol:str, dry_run:bool) -> int:
     count = 0
 
-    for dirpath, dirnames, filenames in os.walk(path):
-        for file in filenames:
-            if SEARCH_CHAR in file:
-                count += 1
-                new_name = f'{dirpath}/{file.replace(SEARCH_CHAR, symbol)}'
-                print(new_name)
+    os.chdir(path)
+    print(os.getcwd())
 
-                if not dry_run:
-                    os.rename(f'{dirpath}/{file}', new_name)
+    for entry in os.listdir(os.getcwd()):
+        if SEARCH_CHAR in entry:
+            count += 1
+            new_name = f'{entry.replace(SEARCH_CHAR, symbol)}'
+            print(new_name)
 
-        for directory in os.listdir(dirpath):
-            if SEARCH_CHAR in directory and directory != ' ':
-                count += 1
-                new_name = f'{directory.replace(SEARCH_CHAR, symbol)}'
-                print(new_name)
+            if not dry_run:
+                os.rename(entry, new_name)
 
-                if not dry_run:
-                    subprocess.run(['mv', f'{directory}', f'{new_name}'])
-                    breakpoint()
+                if os.path.isdir(new_name):
+                    count += rename_files(new_name, symbol, dry_run)
+            else:
+                if os.path.isdir(entry):
+                    count += rename_files(entry, symbol, dry_run)
 
-    if dry_run:
-        print(f'Files to change: {count}')
-    else:
-        print(f'Files changed: {count}')
-
-    return
+    return count
 
 
 def main(argv: Union[Sequence[str], None] = None) -> None:
@@ -82,7 +81,12 @@ def main(argv: Union[Sequence[str], None] = None) -> None:
 
         print(f'\nFiles found: {len(files_to_check)}')
     if args.rename:
-        rename_files(path, args.rename, args.dry_run)
+        count = rename_files(path, args.rename, args.dry_run)
+
+        if args.dry_run:
+            print(f'Files to change: {count}')
+        else:
+            print(f'Files changed: {count}')
 
     return 0
 
