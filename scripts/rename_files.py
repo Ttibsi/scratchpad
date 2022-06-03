@@ -39,22 +39,21 @@ def rename_files(path:str, symbol:str, dry_run:bool) -> int:
     count = 0
 
     os.chdir(path)
-    print(os.getcwd())
 
-    for entry in os.listdir(os.getcwd()):
+    for entry in os.listdir(path):
         if SEARCH_CHAR in entry:
             count += 1
             new_name = f'{entry.replace(SEARCH_CHAR, symbol)}'
-            print(new_name)
+            print(os.path.abspath(new_name))
 
             if not dry_run:
                 os.rename(entry, new_name)
 
-                if os.path.isdir(new_name):
-                    count += rename_files(new_name, symbol, dry_run)
-            else:
-                if os.path.isdir(entry):
-                    count += rename_files(entry, symbol, dry_run)
+                if os.path.isdir(os.path.join(path, new_name)):
+                    count += rename_files(os.path.join(path, new_name), symbol, dry_run)
+
+        if os.path.isdir(os.path.join(path, entry)):
+            count += rename_files(os.path.join(path, entry), symbol, dry_run)
 
     return count
 
