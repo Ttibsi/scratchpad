@@ -19,6 +19,7 @@ def validate_path(path_str:str) -> str:
         raise RuntimeError('Invalid filepath')
 
 
+# TODO: Add blacklist of directories to not search
 def search_dir(file_path) -> list[str]:
     files_with_spaces:list[str] = []
 
