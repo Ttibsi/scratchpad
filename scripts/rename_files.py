@@ -12,6 +12,9 @@ from typing import Union
 # Character to search for in file names
 SEARCH_CHAR = ' '
 
+# List of file paths to ignore relative from file_path
+BLACKLIST = []
+
 def validate_path(path_str:str) -> str:
     if os.path.exists(os.path.expanduser(path_str)):
         return path_str
@@ -24,6 +27,9 @@ def search_dir(file_path) -> list[str]:
     files_with_spaces:list[str] = []
 
     for dirpath, dirnames, filenames in os.walk(file_path):
+        if dirpath.split('/')[-1] in BLACKLIST:
+            print(f'IGNORED: {dirpath}')
+            continue
         for file in filenames:
             if SEARCH_CHAR in file or SEARCH_CHAR in dirpath:
                 files_with_spaces.append(f'{dirpath}/{file}')
@@ -51,6 +57,8 @@ def rename_files(path:str, symbol:str, dry_run:bool, verbose:bool) -> int:
     os.chdir(path)
 
     for entry in os.listdir(path):
+        if entry.split('/')[-1] in BLACKLIST:
+            continue
         if SEARCH_CHAR in entry:
             count += 1
             new_name = titlecase(entry, symbol)
