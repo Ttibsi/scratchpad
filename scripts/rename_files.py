@@ -13,7 +13,16 @@ from typing import Union
 SEARCH_CHAR = ' '
 
 # List of file paths to ignore relative from file_path
-BLACKLIST = []
+BLACKLIST = [
+    'EZFlash',
+    'Books',
+    'Computer_Science_Josh_Crafton',
+    'Extended_Project_Qualification_Authorizer',
+    'Presentations',
+    'Loop.band',
+    'FinalSoundLoop.band',
+    'Beetle',
+]
 
 def validate_path(path_str:str) -> str:
     if os.path.exists(os.path.expanduser(path_str)):
@@ -22,16 +31,22 @@ def validate_path(path_str:str) -> str:
         raise RuntimeError('Invalid filepath')
 
 
-# TODO: Add blacklist of directories to not search
-def search_dir(file_path) -> list[str]:
+def search_dir(file_path, verbose:bool=False) -> list[str]:
     files_with_spaces:list[str] = []
 
     for dirpath, dirnames, filenames in os.walk(file_path):
-        if dirpath.split('/')[-1] in BLACKLIST:
-            print(f'IGNORED: {dirpath}')
-            continue
+        flag = True
         for file in filenames:
-            if SEARCH_CHAR in file or SEARCH_CHAR in dirpath:
+            for item in dirpath.split('/'):
+                if item in BLACKLIST:
+                    if verbose:
+                        print(f'IGNORED: {dirpath}')
+                    flag = False
+
+            if not flag:
+                continue
+
+            if SEARCH_CHAR in file or SEARCH_CHAR in dirpath and flag:
                 files_with_spaces.append(f'{dirpath}/{file}')
 
     return files_with_spaces
@@ -99,7 +114,7 @@ def main(argv: Union[Sequence[str], None] = None) -> None:
     files_to_check = []
 
     if args.find:
-        files_to_check = search_dir(path)
+        files_to_check = search_dir(path, args.verbose)
         print_list(files_to_check)
     if args.count:
         if not files_to_check:
