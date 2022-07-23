@@ -1,0 +1,70 @@
+#!/bin/env python3
+import os
+from pathlib import Path
+import smtplib
+import time
+from typing import List
+
+import details
+
+"""
+Create a file called details.py with the following layout:
+username = <email address>
+password = <email password>
+recieve_email = <email address>
+"""
+
+# Root directory of hard drive
+DIRPATH = Path("/home/auri/Workspace")
+DAYS = 7
+
+
+def getChangedFiles() -> List[str]:
+    changedFiles: List[str] = []
+    files = list(DIRPATH.rglob("*"))
+
+    for file in files:
+        timedelta = time.time() - os.path.getmtime(file)
+        timedelta /= 60 * 60 * 24
+
+        if ".git" in str(file) or str(file.stem)[0] == "." or file.is_dir():
+            continue
+
+        if timedelta < DAYS:
+            changedFiles.append(str(file))
+
+    return changedFiles
+
+
+def notifyOwner(changedFiles: List[str]):
+    server = smtplib.SMTP("smtp-mail.outlook.com:587")
+    server.starttls()
+    server.login(details.username, details.password)
+
+    message = (
+        f"""Subject: PiShare Weekly Update
+
+    Updated files ({len(changedFiles)}):
+
+    """
+        + "\n".join(changedFiles)
+        + """
+
+Backup Recommended"""
+        if len(changedFiles) > 5
+        else ""
+    )
+
+    print("Sending email")
+    server.sendmail(details.username, details.recieve_email, message)
+
+
+def main() -> int:
+    changedFiles: List[str] = getChangedFiles()
+    notifyOwner(changedFiles)
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
