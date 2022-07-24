@@ -8,6 +8,11 @@ from typing import List
 import details
 
 """
+This is intended to run regularly via chron job on my raspberry pi.
+It sends me an email from an outlook account every run analysing and listing 
+all the changed files in the last 7 days. It's intended to run this at midnight
+once a week right after running `all-repos-clone` as well. `
+
 Create a file called details.py with the following layout:
 username = <email address>
 password = <email password>
@@ -15,7 +20,7 @@ recieve_email = <email address>
 """
 
 # Root directory of hard drive
-DIRPATH = Path("/home/auri/Workspace")
+DIRPATH = Path("/mnt/PiShare/")
 DAYS = 7
 
 
@@ -37,6 +42,7 @@ def getChangedFiles() -> List[str]:
 
 
 def notifyOwner(changedFiles: List[str]):
+    # Sends email from an outlook account
     server = smtplib.SMTP("smtp-mail.outlook.com:587")
     server.starttls()
     server.login(details.username, details.password)
