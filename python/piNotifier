@@ -56,7 +56,8 @@ def notifyOwner(changedFiles: List[str]):
         + "\n".join(changedFiles)
         + """
 
-Backup Recommended"""
+Backup Recommended
+sudo mount /dev/sda /mnt/Elements && sudo rsync /mnt/PiShare/ /mnt/Elements --progress -zvrutU """
         if len(changedFiles) > 5
         else ""
     )
