@@ -2,7 +2,7 @@
 # docker run -ti --rm sqlite_test bash
 
 FROM ubuntu:focal
-RUN apt install neovim -y
-RUN DEBIAN_FRONTEND=noninteractive apt update && apt upgrade && apt install sqlite3 -y
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get upgrade -y && apt-get install sqlite3 -y
+RUN apt-get install neovim -y
 
 
