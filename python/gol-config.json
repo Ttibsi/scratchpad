@@ -1,0 +1,22 @@
+{
+    "size": 7,
+    "iter": 4,
+    "coords": [
+        {
+            "x_cord": 0,
+            "y_cord": 2
+        }, {
+            "x_cord": 1,
+            "y_cord": 3
+        }, {
+            "x_cord": 2,
+            "y_cord": 1
+        }, {
+            "x_cord": 2,
+            "y_cord": 2
+        }, {
+            "x_cord": 2,
+            "y_cord": 3
+        }
+    ]
+}
