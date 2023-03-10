@@ -1,0 +1,130 @@
+#!/usr/bin/env python3
+import json
+import os
+import subprocess
+import sys
+from typing import Any
+
+# This is a wrapper around `go test` because I find the output annoying. 
+# It expects your tests to be in `repo/tests` and this file to be located in 
+# somewhere like `repo/scripts`
+
+def format_green(inp: str) -> str:
+    return "\033[0;32m" + inp + "\033[0m"
+
+
+def format_red(inp: str) -> str:
+    return "\033[0;31m" + inp + "\033[0m"
+
+
+def format_bold(inp: str) -> str:
+    return "\033[1;30m" + inp + "\033[0m"
+
+
+def format_green_bold(inp: str) -> str:
+    return "\033[1;32m" + inp + "\033[0m"
+
+
+def format_red_bold(inp: str) -> str:
+    return "\033[1;31m" + inp + "\033[0m"
+
+
+def check_buffer(buf: list[dict[str, str]], tst: str) -> tuple[str, list[Any]]:
+    ret = ""
+
+    for i in buf:
+        if i["Test"] == tst:
+            ret += format_bold(i["Output"])
+
+    return (ret, [])
+
+
+def main() -> int:
+    Passed = 0
+    Failed = 0
+
+    cmd = ["go", "test", "-v", "./tests", "-json"]
+    if len(sys.argv) > 1:
+        cmd.append("-run")
+        cmd += sys.argv[1:]
+
+    raw_input = subprocess.run(
+        cmd, capture_output=True, text=True
+    ).stdout.splitlines()
+
+    json_input = []
+    for item in raw_input:
+        json_input.append(json.loads(item))
+
+    output = ""
+    buffer: list[dict[str, str]] = []
+    for result in json_input:
+        if result["Action"] == "start":
+            output += f"Running tests: {result['Package']}\n\n"
+        elif result["Action"] == "pass":
+            try:
+                info, buffer = check_buffer(buffer, result["Test"])
+                pass_str_1 = "RUN: " + result["Test"]
+                pass_str_2 = format_green("PASS")
+                output += (
+                    pass_str_1
+                    + "." * (80 - (len(pass_str_1) + len(pass_str_2)))
+                    + " "
+                    + pass_str_2
+                    + "\n"
+                )
+
+                if info:
+                    output += info
+
+                Passed += 1
+            except KeyError:  # Final entry
+                continue
+        elif result["Action"] == "fail":
+            try:
+                info, buffer = check_buffer(buffer, result["Test"])
+                fail_str_1 = "RUN: " + result["Test"]
+                fail_str_2 = format_red("FAIL")
+                output += (
+                    fail_str_1
+                    + "." * (80 - (len(fail_str_1) + len(fail_str_2)))
+                    + " "
+                    + fail_str_2
+                    + "\n"
+                )
+
+                if info:
+                    output += info
+
+                Failed += 1
+            except KeyError:  # Final entry
+                continue
+        elif result["Action"] == "output":
+            if any(i in result["Output"] for i in ["=", "-"]):
+                continue
+            elif result["Output"] == "FAIL\n":
+                output += "\n" + format_red_bold(
+                    result["Output"].strip() + " :("
+                )
+            elif result["Output"] == "PASS\n":
+                output += "\n" + format_green_bold(
+                    result["Output"].strip() + " :D"
+                )
+            else:
+                buffer.append(result)
+
+    print(output)
+
+    stats = f" {Passed=}, {Failed=} "
+    bar_len = int((os.get_terminal_size().columns - len(stats)) / 2)
+
+    if Failed:
+        print(format_red_bold("=" * bar_len + stats + "=" * bar_len + "\n"))
+    else:
+        print(format_green_bold("=" * bar_len + stats + "=" * bar_len + "\n"))
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
