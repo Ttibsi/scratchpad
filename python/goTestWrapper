@@ -53,8 +53,13 @@ def main() -> int:
     ).stdout.splitlines()
 
     json_input = []
-    for item in raw_input:
-        json_input.append(json.loads(item))
+    try:
+        for item in raw_input:
+            json_input.append(json.loads(item))
+    except json.decoder.JSONDecodeError as err:
+        print(format_red("Error building project"))
+        print(err)
+        sys.exit()
 
     output = ""
     buffer: list[dict[str, str]] = []
