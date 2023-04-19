@@ -43,6 +43,7 @@ docker network create jenkins
 docker run -d --name jenkins \
   --network jenkins \
   -p 8080:8080 \
+  -p 22:22 \
   -p 50000:50000 \
   -v jenkins_home:/var/jenkins_home \
   jenkins/jenkins
@@ -56,3 +57,11 @@ Verify this with `docker ps`
 1. Admin password - Run `docker logs jenkins` to get the password from the logs
 2. Install suggested plugins
 3. Follow the rest of the setup
+4. Create a new Job and follow instructions
+5. To use an SSH link to a repo, you need to create a custom SSH key and upload 
+the private key to jenkins
+    - `docker exec -ti jenkins bash` to enter the container
+    - `ssh-keygen -t ed25519` to generate a key pair
+    - add the public key to github
+    - `ssh-keyscan github.com >> ~/.ssh/known_hosts` in the container tty to 
+    add the github host key
