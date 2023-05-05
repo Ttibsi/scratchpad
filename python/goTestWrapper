@@ -9,6 +9,21 @@ from typing import Any
 # It expects your tests to be in `repo/tests` and this file to be located in 
 # somewhere like `repo/scripts`
 
+
+# TODO: Add coverage generation
+# ` go test ./tests -v -cover -coverprofile=c.out`
+# go tool cover -html=c.out
+# We probably want to pipe the output of the first one to /dev/null and just straight
+# run the second command
+
+# TODO: Handle skipped tests
+#{"Time":"2023-05-06T20:45:42.792351953+01:00","Action":"start","Package":"command-line-arguments"}
+#{"Time":"2023-05-06T20:45:42.796163759+01:00","Action":"run","Package":"command-line-arguments","Test":"TestSendCookie"}
+#{"Time":"2023-05-06T20:45:42.79618817+01:00","Action":"output","Package":"command-line-arguments","Test":"TestSendCookie","Output":"=== RUN   TestSendCookie\n"}
+#{"Time":"2023-05-06T20:45:42.796213465+01:00","Action":"output","Package":"command-line-arguments","Test":"TestSendCookie","Output":"    auth_test.go:12: THIS TEST NEEDS REWORKING\n"}
+#{"Time":"2023-05-06T20:45:42.796224701+01:00","Action":"output","Package":"command-line-arguments","Test":"TestSendCookie","Output":"--- SKIP: TestSendCookie (0.00s)\n"}
+#{"Time":"2023-05-06T20:45:42.7962331+01:00","Action":"skip","Package":"command-line-arguments","Test":"TestSendCookie","Elapsed":0}
+
 def format_green(inp: str) -> str:
     return "\033[0;32m" + inp + "\033[0m"
 
@@ -73,6 +88,7 @@ def main() -> int:
                 pass_str_2 = format_green("PASS")
                 output += (
                     pass_str_1
+                    + " "
                     + "." * (80 - (len(pass_str_1) + len(pass_str_2)))
                     + " "
                     + pass_str_2
@@ -92,6 +108,7 @@ def main() -> int:
                 fail_str_2 = format_red("FAIL")
                 output += (
                     fail_str_1
+                    + " "
                     + "." * (80 - (len(fail_str_1) + len(fail_str_2)))
                     + " "
                     + fail_str_2
