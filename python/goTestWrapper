@@ -1,31 +1,26 @@
 #!/usr/bin/env python3
+import argparse
 import json
 import os
 import subprocess
 import sys
+from collections.abc import Sequence
 from typing import Any
+from typing import Union
 
-# This is a wrapper around `go test` because I find the output annoying. 
-# It expects your tests to be in `repo/tests` and this file to be located in 
+# This is a wrapper around `go test` because I find the output annoying.
+# It expects your tests to be in `repo/tests` and this file to be located in
 # somewhere like `repo/scripts`
+# Best practice is to symlink to your other repo from this repo using a
+# relative symlink path
 
-
-# TODO: Add coverage generation
-# ` go test ./tests -v -cover -coverprofile=c.out`
-# go tool cover -html=c.out
-# We probably want to pipe the output of the first one to /dev/null and just straight
-# run the second command
-
-# TODO: Handle skipped tests
-#{"Time":"2023-05-06T20:45:42.792351953+01:00","Action":"start","Package":"command-line-arguments"}
-#{"Time":"2023-05-06T20:45:42.796163759+01:00","Action":"run","Package":"command-line-arguments","Test":"TestSendCookie"}
-#{"Time":"2023-05-06T20:45:42.79618817+01:00","Action":"output","Package":"command-line-arguments","Test":"TestSendCookie","Output":"=== RUN   TestSendCookie\n"}
-#{"Time":"2023-05-06T20:45:42.796213465+01:00","Action":"output","Package":"command-line-arguments","Test":"TestSendCookie","Output":"    auth_test.go:12: THIS TEST NEEDS REWORKING\n"}
-#{"Time":"2023-05-06T20:45:42.796224701+01:00","Action":"output","Package":"command-line-arguments","Test":"TestSendCookie","Output":"--- SKIP: TestSendCookie (0.00s)\n"}
-#{"Time":"2023-05-06T20:45:42.7962331+01:00","Action":"skip","Package":"command-line-arguments","Test":"TestSendCookie","Elapsed":0}
 
 def format_green(inp: str) -> str:
     return "\033[0;32m" + inp + "\033[0m"
+
+
+def format_yellow(inp: str) -> str:
+    return "\033[0;33m" + inp + "\033[0m"
 
 
 def format_red(inp: str) -> str:
@@ -54,14 +49,38 @@ def check_buffer(buf: list[dict[str, str]], tst: str) -> tuple[str, list[Any]]:
     return (ret, [])
 
 
-def main() -> int:
+def generate_coverage() -> None:
+    cmd = [
+        [
+            "go",
+            "test",
+            "-coverpkg=./src",
+            "-coverprofile=coverage.out",
+            "./tests",
+        ],
+        ["go", "tool", "cover", "-html=coverage.out"],
+    ]
+
+    print("Generating coverage report...")
+    subprocess.run(
+        cmd[0], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
+
+    print("Opening in web browser...")
+    subprocess.run(cmd[1])
+    print("Removing report file")
+    os.remove("coverage.out")
+    print(format_green("Complete!"))
+
+
+def run_tests(test_name: str) -> None:
     Passed = 0
     Failed = 0
+    Skipped = 0
 
     cmd = ["go", "test", "-v", "./tests", "-json"]
-    if len(sys.argv) > 1:
-        cmd.append("-run")
-        cmd += sys.argv[1:]
+    if test_name:
+        cmd += ["-run", test_name]
 
     raw_input = subprocess.run(
         cmd, capture_output=True, text=True
@@ -101,6 +120,25 @@ def main() -> int:
                 Passed += 1
             except KeyError:  # Final entry
                 continue
+
+        elif result["Action"] == "skip":
+            info, buffer = check_buffer(buffer, result["Test"])
+            pass_str_1 = "RUN: " + result["Test"]
+            pass_str_2 = format_yellow("SKIPPED")
+            output += (
+                pass_str_1
+                + " "
+                + "." * (80 - (len(pass_str_1) + len(pass_str_2)))
+                + " "
+                + pass_str_2
+                + "\n"
+            )
+
+            if info:
+                output += info
+
+            Skipped += 1
+
         elif result["Action"] == "fail":
             try:
                 info, buffer = check_buffer(buffer, result["Test"])
@@ -137,13 +175,39 @@ def main() -> int:
 
     print(output)
 
-    stats = f" {Passed=}, {Failed=} "
+    if Skipped:
+        stats = f" {Passed=} {Failed=} {Skipped=} "
+    else:
+        stats = f" {Passed=}, {Failed=} "
+
     bar_len = int((os.get_terminal_size().columns - len(stats)) / 2)
 
     if Failed:
         print(format_red_bold("=" * bar_len + stats + "=" * bar_len + "\n"))
     else:
         print(format_green_bold("=" * bar_len + stats + "=" * bar_len + "\n"))
+
+
+def main(argv: Union[Sequence[str], None] = None) -> int:
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "-c",
+        "--cover",
+        help="Show coverage via `go test cover`",
+        action="store_true",
+    )
+
+    parser.add_argument(
+        "-r", "--run", help="Define a specific test to run", action="store"
+    )
+
+    args: argparse.Namespace = parser.parse_args(argv)
+
+    if args.cover:
+        generate_coverage()
+    else:
+        run_tests(args.run)
 
     return 0
 
