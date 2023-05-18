@@ -1,23 +1,24 @@
 from dataclasses import dataclass
+from typing import Optional
 
 @dataclass
 class Node:
-    value:int
-    next:Node
+    value:Optional[int]
+    next: Optional["Node"]
 
 
 class Queue:
-    def __init__(self, length, head, tail):
-        self.length = 0 
-        self.head = head
-        self.tail = tail
+    def __init__(self):
+        self.length: int = 0 
+        self.head: Optional[Node] = None 
+        self.tail: Optional[Node] = None
 
-    def peek(self) -> int:
-        return self.head.value
+    def peek(self) -> Optional[int]:
+        return self.head.value if self.head else None
 
-    def deque(self) -> int | None:
-        if not self.head:
-            return None 
+    def deque(self) -> Optional[int]:
+         not self.head:
+          return None 
 
         self.length -= 1
 
@@ -28,15 +29,13 @@ class Queue:
         
         return head.value
 
-    # I don't think this is exactly right
     def enqueue(self, item:int) -> None:
-        self.length  += 1
+        self.length += 1
         n = Node(value=item)
 
-        if not self.tail:
+        if self.tail:
+            self.tail.next = n
+            self.tail = n
+        else:
             self.tail = self.head = n
-
-        self.tail.next = n
-        self.tail = n
-
 

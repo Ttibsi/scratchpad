@@ -1,31 +1,36 @@
 from dataclasses import dataclass
+from typing import Optional
+
 
 @dataclass
 class Node:
-    value:int
-    prev:Node | None
-
+    value:Optional[int]
+    prev: Optional["Node"]
 
 class Stack():
     def __init__(self, head: Node):
-        self.length = 0
-        self.head = head
+        self.length:int = 0
+        self.head:Optional[Node] = None
+
+
+    def peek(self) -> Optional[int]:
+        return self.head.value if self.head else None
 
 
     def push(self, item: int) -> None:
-        n = Node(item)
+        n = Node(value=item)
         self.length += 1
 
-        if not self.head:
-            self.head = n
-            return
+        if self.head:
+            n.prev = self.head
 
-        n.prev = self.head
         self.head = n
 
 
-    def pop(self) -> int | None:
+    def pop(self) -> Optional[int]:
+        # Can't have negative length
         self.length = max(0, self.length - 1)
+
         if self.length == 0:
             head = self.head
             self.head = None
@@ -33,12 +38,4 @@ class Stack():
 
         self.head = self.head.prev
         return self.head.value
-
-
-    def peek(self) -> int | None:
-        if self.head:
-            return self.head.value
-        else:
-            return None
-
 
