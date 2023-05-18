@@ -126,3 +126,52 @@ go back to the start and jump sqrt(n) each time and test them.
 
 See file `3_crystal_balls.py`
 
+### Sorting
+Bubble sort 
+- this basically works by looking at each element, comparing it to the next 
+element, and if it's bigger, swapping them.
+- This means that any elem `i` is <= `i+1`. 
+- After the first iteration, the last element will be the largest one in the array
+which means, for each iteration, we only need to go as far as one less than 
+the last iteration.
+
+Big O drops insignificant values -> O(n^2 + n) just becomes O(n^2)
+Bubble sort is O(n^2)
+
+Binary search is harder than bubble sorting
+
+See file `4_bubble_sort.py`
+
+### Linked Lists
+The big flaw in arrays is that they're a set length of memory, you can't easily
+insert, delete, and it's ungrowable unless you reallocate memory.
+
+Instead, we can use a Linked List, which instead uses nodes that point to 
+the next element in the list, so they don't have to be contiguous in memory. 
+A Singly Linked List only points to the next element, a double linked list also
+points to the previous element as well.
+
+Insertion and deletion are both in constant time because the position of the 
+item in the list doesn't matter - you just need to update the next and prev
+pointers on a few nodes. 
+
+However, there's no easy way to find the `[x]` element, so you need to start from
+the HEAD and look at every item until you find what you want, so searching is
+in linear time.
+
+### Queues
+This is one implementation of a singly linked list using a FIFO approach.
+
+Insertion is just adding a new node at the end of the queue and moving the TAIL
+and is called `enqueue`
+Deletion is popping from and moving the HEAD, and is called `deque`
+Peeking is just looking at the value of what the HEAD is pointing to.
+
+see file `5_queue.py`
+
+### Stack
+This is the opposite of a queue, a Last In First Out structure. 
+It flips a queue around, with the HEAD at the end of the list and the TAIL at
+the start.
+
+see file `6_stack.py`
