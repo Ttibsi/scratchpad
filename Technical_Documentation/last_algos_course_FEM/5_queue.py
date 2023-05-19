@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
+
 @dataclass
 class Node:
     value:Optional[int]
@@ -17,7 +18,7 @@ class Queue:
         return self.head.value if self.head else None
 
     def deque(self) -> Optional[int]:
-         not self.head:
+        if not self.head:
           return None 
 
         self.length -= 1
@@ -31,7 +32,7 @@ class Queue:
 
     def enqueue(self, item:int) -> None:
         self.length += 1
-        n = Node(value=item)
+        n = Node(item, None)
 
         if self.tail:
             self.tail.next = n
@@ -39,3 +40,34 @@ class Queue:
         else:
             self.tail = self.head = n
 
+    def items(self) -> list[int]:
+        ret = []
+
+        ptr = self.head
+        if ptr.value is None:
+            return ret
+
+        while True:
+            ret.append(ptr.value)
+            if ptr == self.tail:
+                break
+
+            ptr = ptr.next
+
+        return ret
+
+
+def main() -> None:
+    q = Queue()
+
+    for i in range(0, 5):
+        q.enqueue(i)
+
+    print(q.items())
+    print(q.peek())
+
+    q.deque()
+    print(q.items())
+
+if __name__ == "__main__":
+    main()
