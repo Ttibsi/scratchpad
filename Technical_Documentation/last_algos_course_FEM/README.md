@@ -175,3 +175,43 @@ It flips a queue around, with the HEAD at the end of the list and the TAIL at
 the start.
 
 see file `6_stack.py`
+
+Linked lists use less memory than a static array but is always difficult or 
+slow to search
+
+### ArrayList
+An array that we can grow by creating our own insert() and delete() methods.
+This uses a separate capacity value as well as a length and you can work with
+that to allow for insert and delete methods.
+
+Python's Array and Go's Slice are examples of ArrayList data structures
+
+Queues are better for node-based data structures such as a Linked List, as 
+the methods on the data structure work from the start of the queue (as it's FIFO).
+If you use an Array-based data structure, an enqueue() will involve moving 
+every element along one just to insert at the start, which is an O(n) operation.
+
+### Ring Buffers/ Array Buffers
+These are a type of array that use index-based head and tails, meaning that
+the length and capacity of the array are different values. Anything outside of
+the head and tail are all set to null. If you need to deque(), for example, you
+can just move the head forward and clear up the floating value. This makes for
+a really elegant looping form of datastructure.
+
+If your tail exceeds your capacity, you can move it back to the start of the 
+array, and use modulo to work out where it should be in the actual array.
+
+Example:
+
+[  x   x]
+0  H   TN
+
+If you move the tail forward one element, it'll overflow the array. Instead,
+you want to use `this.tail % len` (typescript) to move the tail to the start
+and keep track of it's value
+
+[x  x   ]
+0T  H   N
+
+
+
