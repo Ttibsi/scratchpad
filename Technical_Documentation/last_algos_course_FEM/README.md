@@ -214,4 +214,14 @@ and keep track of it's value
 0T  H   N
 
 
+### Recursion
+A function that calls itself until a problem is solved, often using a base case
+to detect if the problem is solved to break out of the recursion.
+
+Always start with the base case, work out what you need first. 
+
+Recursion is usually broken up into 3 stages, the pre, the recurse, and the post.
+Often, you will use those for things like managing state.
+
+see file `7_recursion.py`
 
