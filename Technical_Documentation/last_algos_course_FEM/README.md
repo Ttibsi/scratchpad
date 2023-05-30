@@ -225,3 +225,36 @@ Often, you will use those for things like managing state.
 
 see file `7_recursion.py`
 
+### Quick Sort
+
+This uses a method called Divide and Conquer - where you split the data in half
+at each iteration of the algorithm and weakly sort each half, and then split it
+again to check again etc. In this case, you're only making sure that the 
+left-most element is the lowest on each iteration.
+    - Merge sort is another example of this type of algorithm.
+
+In Quick sort, we take a point anywhere in our array and make it our Pivot. We
+take a pointer at the start of the array and go through until we reach the 
+pivot, and if the element is lower than the pivot, it moves to the start of
+the array. We then do the same at the upper half of the array. 
+
+After the first iteration, every element to the left is lower, and every element
+to the right is higher, but we haven't fully sorted the array yet. We want to 
+repeat this process on each half.
+
+Step 1:
+[     p     ]
+0           N
+
+Step 2:
+[  p  ][  p  ]
+0            N
+
+etc
+
+In general, this is O(n log n), but if the array is fully reverse sorted already
+(ex [10, 9, 8, ... 1]), then this can be O(n^2), so the running time of this
+algorithm can vary.
+
+see file `8_quick_sort.py`
+
