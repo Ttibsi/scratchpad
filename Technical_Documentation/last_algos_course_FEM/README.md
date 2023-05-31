@@ -88,12 +88,12 @@ Linear search is the most basic searching algorithm. It's basically a for loop,
 where you start at the beginning of the array and go through every element to 
 check if it's the value you want. A linear search takes linear time
 
-See file `1_linear_search.py`
+See file `01_linear_search.py`
 
 Is your data sorted? If it is, this can give you many benefits that you can 
 make use of for faster searching.
 
-See file `2_binary_search.py`
+See file `02_binary_search.py`
 
 Binary searching is in O(logn) because you are halving the size of your dataset
 on each iteration.
@@ -124,7 +124,7 @@ the middle element is true (assuming we have a list of bools that tells us if
 the ball smashes or not - we start on the middle floor) and from there, we 
 go back to the start and jump sqrt(n) each time and test them.
 
-See file `3_crystal_balls.py`
+See file `03_crystal_balls.py`
 
 ### Sorting
 Bubble sort 
@@ -140,7 +140,7 @@ Bubble sort is O(n^2)
 
 Binary search is harder than bubble sorting
 
-See file `4_bubble_sort.py`
+See file `04_bubble_sort.py`
 
 ### Linked Lists
 The big flaw in arrays is that they're a set length of memory, you can't easily
@@ -167,14 +167,14 @@ and is called `enqueue`
 Deletion is popping from and moving the HEAD, and is called `deque`
 Peeking is just looking at the value of what the HEAD is pointing to.
 
-see file `5_queue.py`
+See file `05_queue.py`
 
 ### Stack
 This is the opposite of a queue, a Last In First Out structure. 
 It flips a queue around, with the HEAD at the end of the list and the TAIL at
 the start.
 
-see file `6_stack.py`
+See file `60_stack.py`
 
 Linked lists use less memory than a static array but is always difficult or 
 slow to search
@@ -223,7 +223,7 @@ Always start with the base case, work out what you need first.
 Recursion is usually broken up into 3 stages, the pre, the recurse, and the post.
 Often, you will use those for things like managing state.
 
-see file `7_recursion.py`
+See file `07_recursion.py`
 
 ### Quick Sort
 
@@ -256,5 +256,5 @@ In general, this is O(n log n), but if the array is fully reverse sorted already
 (ex [10, 9, 8, ... 1]), then this can be O(n^2), so the running time of this
 algorithm can vary.
 
-see file `8_quick_sort.py`
+See file `08_quick_sort.py`
 
