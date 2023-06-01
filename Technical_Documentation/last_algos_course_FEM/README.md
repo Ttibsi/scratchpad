@@ -258,3 +258,36 @@ algorithm can vary.
 
 See file `08_quick_sort.py`
 
+### Trees
+All programming leads to trees, they're the most common data structure
+* File systems
+* HTML DOM
+* Abstract Syntax Trees in compilers
+
+A tree is made up of nodes, which often looks like this:
+
+```
+class Node<T>:
+    value: T
+    children: [T]
+```
+
+Instead of `children`, a binary tree will use `left: Node` and `right: Node`. 
+This is often represented as optional, or uses a pointer.
+
+* Root - The parent/top level element
+* Height - The distance from the root node to it's furthest child
+* Binary tree - A tree where any node can have up to two children
+* General tree - A tree with any node can have any number of children 
+    (ex file system)
+* Leaf - a node without any children
+* Balance - A tree is perfectly balanced when it's left and right children have
+* the same distance to the end
+* Branching factor - the amount of children a tree can have (a binary tree has
+    a branching factor of 2)
+
+Traversing a tree is O(n) because you have to see every element. They are also
+implicitly a stack when you think about it - when you visit a tree, you add to
+the stack, and when you return from it, you pop off.
+
+See file `10_binary_tree_pre.py`
