@@ -291,3 +291,45 @@ implicitly a stack when you think about it - when you visit a tree, you add to
 the stack, and when you return from it, you pop off.
 
 See file `10_binary_tree_pre.py`
+
+### Heaps
+Heaps are also known as priority queues
+This is a type of binary tree which is constrained to always have values that 
+are higher (maxheap) or lower (minheap) than the root (remembering that every
+node can be the root of it's own tree). You restructure the tree when you insert
+something
+
+* Heaps use weak ordering
+* They're always complete - there aren't any gaps
+* When reordering, you just use a bubble sort
+* deleting - takes the furthest leaf and places it where the deleted item is,
+then you bubble sort the whole tree to that point to tidy it up.
+
+* It's implemented using an array/arraylist
+    * parent node index can be calculated with `(x - 1) // 2` where x is the 
+    current node index
+    * Left child node is at `2x + 1`
+    * Right child node is at `2x + 2`
+* These data structures are self balancing
+
+See file `14_min_heap.py`
+
+#### Trie Tree
+A type of heap (named a retrieval tree)
+It's mostly used for autocorrect but can also be used for caching and does
+come up in interviews.
+Implementing it usually involves a lot of pointers/doubly-linked list if your
+language uses those
+
+Under the assumption your implementing autocorrect for the english language:
+* every node can have 26 children (there are 26 letters in the english alphabet)
+* The node structure should have an `isWord()` method that returns a bool
+* Instead of letters, you could also work wtih ascii values to represent the letters
+
+Searching is pre-order DFS
+Inserting is pretty simple as you just follow the nodes when inserting a new letter
+
+Running time is O(h) where h is the height, but if you use the english alphabet
+then it'd be O(1) as the most you can traverse down is the length of the longest
+valid word in the alphabet. 
+
