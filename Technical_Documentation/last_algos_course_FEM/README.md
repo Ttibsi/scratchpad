@@ -174,7 +174,7 @@ This is the opposite of a queue, a Last In First Out structure.
 It flips a queue around, with the HEAD at the end of the list and the TAIL at
 the start.
 
-See file `60_stack.py`
+See file `06_stack.py`
 
 Linked lists use less memory than a static array but is always difficult or 
 slow to search
@@ -332,4 +332,117 @@ Inserting is pretty simple as you just follow the nodes when inserting a new let
 Running time is O(h) where h is the height, but if you use the english alphabet
 then it'd be O(1) as the most you can traverse down is the length of the longest
 valid word in the alphabet. 
+
+### Graphs
+Technically everything is a graph
+Graphs are a series of nodes with any amount of connections
+    - trees are a type of graph with a root node. Generic graphs don't have roots
+
+- Cycle - When you can visit at least 3 nodes and end up where you started.
+- Acyclic - a graph that contains no cycles
+- Connected - Every node has a path to another node
+- Directed - When there is a direction to the nodes
+- Weighted - A value associated with a direction
+- DAG - Directed, Acyclic Graph
+- Vertex - also a node
+- Adjacency List - An array of lists that states every connection and the 
+weight on it
+- Adjacency Matrix - A table of connections instead - this is very inefficient
+to scan, O(N^2)
+
+Adjacency list example;
+```
+[
+    "node1": ["node2", "node5"],
+    "node2": ["node1", "node3", "node6"],
+    "node3": ["node2", "node7", "node8"],
+    "node4": ["node5"],
+    "node5": ["node1", "node4", "node7", "node9"],
+    "node6": ["node2"],
+    "node7": ["node3", "node5"],
+    "node8": ["node3"],
+    "node9": ["node5"],
+]
+```
+
+Adjacency matrix example
+```
+x 1 2 3 4 5 6 7 8 9
+1   x     x
+2     x     x
+3   x         x x
+4         x
+5 x     x     x   x
+6   x
+7     x   x
+8     x
+9         x
+```
+
+Graph BFS and DFS both work the same way as trees did because trees are a form 
+of graph
+
+See file `15_BFS_graph_matrix.py`
+
+DFS is O(V + E)
+    - number of nodes/vectors + number of edges
+
+See file `16_DFS_graph_list.py`
+
+Dijkstra's shortest path
+- Shortest path from a node to any other node
+- uses BFS
+- Breaks under negative edge weights
+- Used to be O(V^2) but is a lot faster now thanks to some clever optimisations
+
+Running time is very complex to work out now
+    - Altogether it could be O(V^2 + E)
+    - If we used a minheap, it could be made a whole lot faster
+    - O(log V(V + E))
+    - Full running time is explained in the comments on the example
+
+See file `17_dijksta_shortest_path.py`
+
+### Maps
+- Load factor - the amount of data vs the amount of storage
+- Key - the hashable content, must be consistent
+- Value - Values associated with a key
+- Collision - When 2 keys may point to the same cell after hashing
+
+Maps use arraylists under the hood to track where the data is, but the
+hashing is used to point to where it is. 
+This means that map contents can be anywhere in memebry
+    - collisions can happen still based on the hashing algorithm. In that
+    scenario, we use either exponential or linear backoff, meaning we basically
+    move the data we're trying to store to the next available space.
+    - The key is always stored as well, not just the value, so that the 
+    data structure can check that value together when it's retrieved.
+    - Each "space" in the map is either an arraylist or double linked list
+
+Running time is O(1) because of the hashing algorithm - the data is always in 
+the same place, regardless of how many other values there are, plus O(n) where
+n is the number of values that pointed to that space (which is where the DLL 
+comes in)
+
+### LRU Cache
+Least Recently Used
+Think of an "open recent files" window, that removes an item after there are
+x amount before it.
+
+This usually is implemented as a linked list and a hashmap together. 
+Every time you retrieve an item, it's moved to the front of the list.
+The data structure prunes the last value after insertion or updating
+
+Retrieval is 7 O(1) operations
+    - 4: removing a node from where it is (breaking and updating connections 
+    to it's prev.next and next.prev etc)
+    - 2: Inserting at the front (Updating that node's next and prev)
+    - 1: Updating the head to point to that retrieved node
+
+Popping is 3 operations
+    - prev.next
+    - next.prev
+    - clearing this node
+
+See file `18_lru_cache.py`
 
