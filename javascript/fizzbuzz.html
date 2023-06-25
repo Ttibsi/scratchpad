@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head></head>
+    <body>
+        <div id="frame"></div>
+    </body>
+    <script>
+        let end = 30
+        let frame = document.getElementById("frame")
+
+        for (let i = 1; i <= end; i++) {
+            if (i % 15 === 0) {
+                frame.innerHTML += `<p>Fizzbuzz</p>`
+            } else if (i % 5 === 0) {
+                frame.innerHTML += `<p>buzz</p>`
+            } else if (i % 3 === 0) {
+                frame.innerHTML += `<p>Fizz</p>`
+            } else {
+                frame.innerHTML += `<p>${i}</p>`
+            }
+        }
+    </script>
+</html>
