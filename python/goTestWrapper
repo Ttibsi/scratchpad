@@ -73,12 +73,12 @@ def generate_coverage() -> None:
     print(format_green("Complete!"))
 
 
-def run_tests(test_name: str) -> None:
+def run_tests(test_name: str, test_dir: str) -> None:
     Passed = 0
     Failed = 0
     Skipped = 0
 
-    cmd = ["go", "test", "-v", "./tests", "-json"]
+    cmd = ["go", "test", "-v", test_dir, "-json"]
     if test_name:
         cmd += ["-run", test_name]
 
@@ -199,6 +199,10 @@ def main(argv: Union[Sequence[str], None] = None) -> int:
     )
 
     parser.add_argument(
+        "-t", "--testdir", help="Specify directory tests are held in", action="store", required=True
+    )
+
+    parser.add_argument(
         "-r", "--run", help="Define a specific test to run", action="store"
     )
 
@@ -207,7 +211,7 @@ def main(argv: Union[Sequence[str], None] = None) -> int:
     if args.cover:
         generate_coverage()
     else:
-        run_tests(args.run)
+        run_tests(args.run, args.testdir)
 
     return 0
 
