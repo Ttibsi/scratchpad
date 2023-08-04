@@ -160,7 +160,8 @@ def run_tests(test_name: str, test_dir: str) -> None:
             except KeyError:  # Final entry
                 continue
         elif result["Action"] == "output":
-            if any(i in result["Output"] for i in ["=", "-"]):
+            # if any(i in result["Output"] for i in ["=", "-"]):
+            if any(i in result["Output"] for i in ["RUN", "FAIL", "PASS"]):
                 continue
             elif result["Output"] == "FAIL\n":
                 output += "\n" + format_red_bold(
