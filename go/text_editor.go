@@ -58,11 +58,11 @@ func initialModel(file string) model {
 	}
 	defer f.Close()
 
-
+	txt.SetValue(strings.Join(lines, "\n"))
 
 	return model{
 		alert: "placeholder....",
-		current_line: 0,
+		current_line: len(lines),
 		input: txt,
 		lines: lines,
 		open_file: file,
@@ -84,9 +84,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		case "ctrl+s":
-		// TODO write to file
+			err := os.WriteFile(m.open_file, []byte(strings.Join(m.lines, "\n")), 0644)
+			if err != nil {
+				m.alert = err.Error()
+			} else { m.alert = "File saved!" }
+		case "up":
+			m.current_line--
+		case "down":
+			m.current_line++
+		case "backspace":
+			curr := m.lines[m.current_line - 1]
+			m.lines[m.current_line - 1] = curr[:len(curr) - 1]
 		default:
-			m.lines[m.current_line] += msg.String()
+			m.lines[m.current_line - 1] += msg.String()
 		}
 	}
 
