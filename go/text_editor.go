@@ -6,18 +6,21 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"os/signal"
 	"strings"
-	"syscall"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/term"
 
 	"github.com/charmbracelet/bubbles/textarea"
+	"github.com/charmbracelet/lipgloss"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-// TODO: altscreen rendering doesn't work
+// This is a test prototype of sorts for a text editor. It can read and write 
+// to a specified file, and you can move the cursor up to edit a previous line
+// Writing to earlier in a given line isn't currently supported, neither is 
+// opening an empty buffer. The lipgloss styling needs work, but as that's 
+// only cosmetic, I'm not going to dedicate time to that for a prototype.
+
 type model struct {
 	alert string
 	current_line int
@@ -30,14 +33,19 @@ func (m model) Init() tea.Cmd {
 	return tea.Batch(textarea.Blink, tea.EnterAltScreen)
 }
 
+var style = lipgloss.NewStyle().
+	BorderStyle(lipgloss.NormalBorder()).
+	// BorderForeground(lipgloss.Color("63")).
+	MarginLeft(10).
+	MarginTop(5).
+	Background(lipgloss.Color("#333333"))
+
+
 func initialModel(file string) model {
 	txt := textarea.New()
+	txt.FocusedStyle.Base = style
 	txt.Focus()
 	txt.ShowLineNumbers = true
-
-	w, h, _ := term.GetSize(0)
-	txt.SetWidth(int(float64(w) * 0.8))
-	txt.SetHeight(int(float64(h) *  0.8))
 
 	var lines []string
 
@@ -74,6 +82,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	m.input, tiCmd = m.input.Update(msg)
 
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.input.SetWidth(int(float64(msg.Width) * 0.8))
+		m.input.SetHeight(int(float64(msg.Height) *  0.8))
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "enter":
@@ -104,27 +115,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	w, h, _ := term.GetSize(0)
 	return fmt.Sprintf(
-		"%s%s%s\n%s%s%s",
-		strings.Repeat("\n",int(float64(h) * 0.1)),
-		strings.Repeat(" ",int(float64(w) * 0.1)),
+		"%s\n%s",
 		m.input.View(), 
-		strings.Repeat(" ",int(float64(w) * 0.1)),
 		m.alert,
-		strings.Repeat("\n",int(float64(h) * 0.1)),
 	)
-}
-
-func handleResizeSignal() {
-	sigwinch := make(chan os.Signal, 1)
-	signal.Notify(sigwinch, syscall.SIGWINCH)
-
-	go func() {
-		for range sigwinch {
-			// TODO: Re-trigger m.View somehow, need to redraw
-		}
-	}()
 }
 
 var rootCmd = &cobra.Command{
@@ -135,7 +130,6 @@ var rootCmd = &cobra.Command{
 		if len(args) > 0 {
 			filename := args[0]
 
-			handleResizeSignal()
 			p := tea.NewProgram(initialModel(filename), tea.WithAltScreen())
 			if err := p.Start(); err != nil {
 				fmt.Printf("Alas, there's been an error: %v", err)
