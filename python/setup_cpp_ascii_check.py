@@ -2,7 +2,7 @@ import argparse
 from collections.abc import Sequence
 from typing import Union
 
-def out(num: int = 128, start:int = 1) -> None:
+def out(num: int, start: int) -> None:
     out = "\t"
     for i in range(start, num):
         out += """\n} """
@@ -27,9 +27,13 @@ def main(argv: Union[Sequence[str], None] = None) -> int:
     args: argparse.Namespace = parser.parse_args(argv)
 
     if args.file:
-        to_file(out(int(args.count), int(args.start)))
+        count = int(args.count) if args.count else 128
+        start = int(args.start) if args.start else 1
+        to_file(out(count, start))
     else:
-        print(out(int(args.count), int(args.start)))
+        count = int(args.count) if args.count else 128
+        start = int(args.start) if args.start else 1
+        print(out(count, start))
 
     return 0
 
