@@ -242,7 +242,8 @@ func list_tbr() error {
 	conn, err := sql.Open("sqlite3", db_name)
 	if err != nil { return err }
 
-	rows, err := conn.Query("SELECT")
+	rows, err := conn.Query("SELECT b.title, b.author_1, b.author_2, t.date FROM books b INNER JOIN tbr t ON b.book_id = t.book_id;")
+	if err != nil { return err }
 
 	var tbr_list []tbrItem
 
@@ -260,9 +261,9 @@ func list_tbr() error {
 	}
 
 	var sb strings.Builder
-	sb.WriteString("+" + strings.Repeat("-", longest_name + 2) + "+")
+	sb.WriteString("+" + strings.Repeat("-", longest_name + 2) + "+\n")
 	for _, i := range tbr_list {
-		sb.WriteString("| " + i.title + " |")
+		sb.WriteString("| " + i.title + " |\n")
 	}
 	sb.WriteString("+" + strings.Repeat("-", longest_name + 2) + "+")
 
