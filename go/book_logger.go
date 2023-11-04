@@ -163,14 +163,22 @@ func show_review(id int) error {
 	var log BooklogItem
 
 	conn, err := sql.Open("sqlite3", db_name)
-	if err != nil { return err }
+	if err != nil {
+		fmt.Println(err.Error())
+		return err 
+	}
 
-	err = conn.QueryRow(
-		"SELECT * FROM books b INNER JOIN book_log bl ON b.book_id = bl.book_id WHERE bl.log_id = ?",
+	fmt.Println("id:" + strconv.Itoa(id))
+	row := conn.QueryRow(
+		"SELECT b.title, b.author_1, b.author_2, bl.finish_date, bl.review FROM books b INNER JOIN book_log bl ON b.book_id = bl.book_id WHERE bl.log_id = ?;",
 		id,
-		).Scan(
-			&log.title, &log.author_1, &log.author_2, &log.finish_date, &log.review,
 		)
+
+	err = row.Scan(&log.title, &log.author_1, &log.author_2, &log.finish_date, &log.review)
+	if err != nil {
+		fmt.Println(err.Error())
+		return err 
+	}
 
 	var sb strings.Builder
 	sb.WriteString("Book: " + log.title + "\n")
@@ -270,7 +278,6 @@ func print_review() {}
 var review bool
 var regen_db bool
 var add bool
-var review_id int
 
 var rootCmd = &cobra.Command{
 	Use:   "book-logger",
@@ -303,7 +310,10 @@ var logCmd = &cobra.Command{
 			err := new_entry()
 			if err != nil { fmt.Println("ERROR](new_entry): " + err.Error())}
 		} else {
-			err := show_review(review_id)
+			review_id, err := strconv.Atoi(args[0])
+			if err != nil { fmt.Println("ERROR](show_review): " + err.Error())}
+
+			err = show_review(review_id)
 			if err != nil { fmt.Println("ERROR](show_review): " + err.Error())}
 		}
 	},
@@ -327,7 +337,6 @@ func main() {
 	rootCmd.Flags().BoolVarP(&review, "review", "", false, "")
 	rootCmd.Flags().BoolVarP(&regen_db, "regen-db", "", false, "")
 	logCmd.Flags().BoolVarP(&add, "add", "", false, "")
-	logCmd.Flags().IntVarP(&review_id, "review id", "", 0, "")
 	TbrCmd.Flags().BoolVarP(&add, "add", "", false, "")
 
 	rootCmd.AddCommand(logCmd)
