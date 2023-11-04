@@ -13,6 +13,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// GOARCH=arm64 GOOS=linux go build -o booklog book_logger.go
+
 const db_name string = "book_log.db"
 
 type BooklogItem struct {
@@ -74,19 +76,12 @@ func create_db() error {
 	return nil
 }
 
-// TODO: If this is only called in other functions that have open connections
-// We want to just pass a pointer to the conn in here instead - otherwise 
-// it'll probably just lock
-func getBookID(name string) (int, error) {
-	conn, err := sql.Open("sqlite3", db_name)
-	if err != nil { return -1, err }
-
+func getBookID(name string, conn *sql.DB) (int, error) {
 	statement := "SELECT book_id FROM books WHERE title = $1"
 	var ret int
 
 	row := conn.QueryRow(statement, name)
-	err = row.Scan(&ret)
-	conn.Close()
+	err := row.Scan(&ret)
 
 	if err != nil {
 		return -1, err
@@ -110,10 +105,16 @@ func new_entry() error {
 	fmt.Print("Enter author names, comma separated: ")
 	fmt.Scanln(&authors)
 
-	book_id, _ := getBookID(new_book)
+	book_id, _ := getBookID(new_book, conn)
 
 	if book_id == -1 {
-		author_list := strings.Split(authors, ",")
+		author_list := []string{}
+
+		if strings.Contains(authors, ",") {
+			author_list = strings.Split(authors, ",")
+		} else {
+			author_list = []string{strings.TrimSpace(authors), ""}
+		}
 		_, err := conn.Exec(
 			"INSERT INTO books VALUES (NULL, ?, ?, ?);",
 			new_book,
@@ -125,7 +126,7 @@ func new_entry() error {
 
 	// This will now return the book id because it's just been inserted to
 	// the db
-	book_id, _ = getBookID(new_book)
+	book_id, _ = getBookID(new_book, conn)
 
 	fmt.Print("Enter finish date (dd/mm/yyyy) - leave empty if today: ")
 	fmt.Scanln(&finish)
@@ -144,16 +145,17 @@ func new_entry() error {
 		finish_date = time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC).Format("2006/01/02")
 	}
 
-
-	_, err = conn.Exec(
-		"INSERT INTO book_log VALUES (NULL, ?, ?, ?)",
+	var inserted_id int
+	res := conn.QueryRow(
+		"INSERT INTO book_log VALUES (NULL, ?, ?, ?) RETURNING log_id",
 		book_id,
 		finish_date,
 		review,
 	)
 	if err != nil { return err }
-	
-	// TODO: Print review ID
+
+	err = res.Scan(&inserted_id)
+	fmt.Println("Row inserted with id: ", inserted_id)
 
 	conn.Close()
 	return nil
@@ -209,7 +211,7 @@ func new_tbr() error {
 	fmt.Print("Enter author names, comma separated: ")
 	fmt.Scanln(&authors)
 
-	book_id, _ := getBookID(new_book)
+	book_id, _ := getBookID(new_book, conn)
 
 	if book_id == -1 {
 		author_list := strings.Split(authors, ",")
@@ -224,20 +226,22 @@ func new_tbr() error {
 
 	// This will now return the book id because it's just been inserted to
 	// the db
-	book_id, _ = getBookID(new_book)
+	book_id, _ = getBookID(new_book, conn)
 
-	_, err = conn.Exec(
+	var inserted_id int
+	res := conn.QueryRow(
 		"INSERT INTO tbr VALUES (NULL, ?, ?);",
 		book_id,
 		time.Now().String(),
 	)
 	if err != nil { return err }
+	err = res.Scan(&inserted_id)
+	fmt.Println("Row inserted with id: ", inserted_id)
 
 	conn.Close()
 	return nil
 }
 
-// TODO:
 func list_tbr() error {
 	conn, err := sql.Open("sqlite3", db_name)
 	if err != nil { return err }
@@ -274,7 +278,15 @@ func list_tbr() error {
 }
 
 // TODO:
-func print_review() {}
+func print_review() error {
+	conn, err := sql.Open("sqlite3", db_name)
+	if err != nil { return err }
+
+	// 
+
+	conn.Close()
+	return nil
+}
 
 var review bool
 var regen_db bool
