@@ -105,10 +105,12 @@ func new_entry() error {
 	var finish_date string
 	var review string
 
+	scanner := bufio.NewScanner(os.Stdin)
+
 	fmt.Print("Enter new book name: ")
-	fmt.Scanln(&new_book)
+	if scanner.Scan() { new_book = scanner.Text() }
 	fmt.Print("Enter author names, comma separated: ")
-	fmt.Scanln(&authors)
+	if scanner.Scan() { authors = scanner.Text() }
 
 	book_id, _ := getBookID(new_book, conn)
 
@@ -139,10 +141,7 @@ func new_entry() error {
 	fmt.Scanln(&finish)
 	fmt.Print("Enter review: ")
 
-	scanner := bufio.NewScanner(os.Stdin)
-	if scanner.Scan() {
-		review = scanner.Text()
-	}
+	if scanner.Scan() { review = scanner.Text() }
 
 	if finish == "" {
 		finish_date = time.Now().UTC().Format("2006/01/02")
@@ -242,8 +241,8 @@ func show_all() error {
 	longest_review := 0
 	space := 0
 	for _, l := range logs {
-		if len(l.title) > longest_title {
-			longest_title = len(l.title)
+		if len(l.title) > longest_title + 2{
+			longest_title = len(l.title) + 2
 		}
 
 		if len(l.review) > longest_review {
@@ -262,23 +261,23 @@ func show_all() error {
 	title_width := width
 
 	var sb strings.Builder
-	// TODO: If entries are longer than the headings
-	// TODO: right border
 
-	if longest_title > len("Titles") {
-		space = longest_title - len("Titles")
+	if longest_title > len(" Titles ") {
+		space = longest_title - len(" Titles ")
 	}
 	sb.WriteString("+ Titles" + strings.Repeat(" ", space) + " |")
 	title_width -= space + 3 + len("Titles")
 
-	if longest_authors > len(" Authors") {
-		space = longest_authors - len(" Authors")
+	if longest_authors > len(" Authors ") {
+		space = longest_authors - len(" Authors ")
 	}
-	sb.WriteString(" Authors" + strings.Repeat(" ", space) + "|")
-	title_width -= len(" Authors |")
 
-	sb.WriteString("  Dates    |")
-	title_width -= len("  Dates   |")
+	sb.WriteString(" Authors" + strings.Repeat(" ", space) + " |")
+	title_width -= len(" Authors |")
+	title_width -= space
+
+	sb.WriteString("  Dates     |")
+	title_width -= len("  Dates    |")
 
 	if longest_review > len(" Reviews ") {
 		space = longest_review - len(" Reviews ")
@@ -288,37 +287,50 @@ func show_all() error {
 	}
 	sb.WriteString(" Reviews ")
 	title_width -= len(" Reviews +")
-	sb.WriteString(strings.Repeat(" ", space) + "+")
+	title_width -= space
+	sb.WriteString(strings.Repeat(" ", space + 1) + "+")
 
-	sb.WriteString("\n|" + strings.Repeat("-", width-2) + "|\n")
+	sb.WriteString("\n|" + strings.Repeat("-", title_width - 1) + "|\n")
 
 	for idx, l := range logs {
-		sb.WriteString("| " + l.title + " ")
-		if len(l.title) <= len(" Titles ") {
-			sb.WriteString(strings.Repeat(" ", len(" Titles ") - len(l.title) - 2))
-		} 
+		var line_len int
 
-		var authors string
-		authors += l.author_1
+		sb.WriteString("| " + l.title + " ")
+		line_len += len("| " + l.title + " ")
+
+		if len(l.title) <= len(" Titles ") {
+			sb.WriteString(strings.Repeat(" ", longest_title - len(l.title) - 2))
+		} 
+		line_len += longest_title - len(l.title)
+
+		authors := l.author_1
 		if l.author_2 != "" {
 			authors += ", " + l.author_2
 		}
+
 		sb.WriteString("| " + authors)
+		line_len += len("| " + authors)
+
 		if len(authors) < len(" Authors ") {
-			sb.WriteString(strings.Repeat(" ", len(" Authors ") - len(authors) + 1))
+			sb.WriteString(strings.Repeat(" ", longest_authors - len(authors) - 2))
+			line_len += longest_authors - len(authors)
 		}
 
 		sb.WriteString(" | " + l.finish_date + " | " + l.review)
-		if len(l.review) < len(" Review ") {
-			sb.WriteString(strings.Repeat(" ", len(" Review ") - len(l.review) ))
+		line_len += (len(" | " + l.finish_date + " | " + l.review))
+
+		// if len(l.review) < len(" Review ") {
+		if len(l.review) < longest_review {
+			sb.WriteString(strings.Repeat(" ", longest_review - len(l.review)))
+			line_len += longest_review - len(l.review) + 1
 		}
 
 		if idx < len(logs)+1 {
-			sb.WriteString("\n")
+			sb.WriteString("|\n")
 		}
 	}
 
-	sb.WriteString("+" + strings.Repeat("-", width-2) + "|")
+	sb.WriteString("+" + strings.Repeat("-", title_width - 1) + "+")
 	fmt.Println(sb.String())
 
 	conn.Close()
