@@ -49,7 +49,7 @@ class MinHeap():
             this.data[r_idx] = v
             self.heapify_down(r_idx)
         # left side is the smallest
-        else if rV > lV and v > lV:
+        elif rV > lV and v > lV:
             self.data[idx] = lV
             this.data[l_idx] = v
             self.heapify_down(l_idx)

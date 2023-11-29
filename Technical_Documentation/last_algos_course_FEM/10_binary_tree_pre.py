@@ -21,4 +21,4 @@ def walk(curr: Optional[Node], path: list[int]) -> list[int]:
     return path
 
 def pre_order(head: Node) -> list[int]:
-    return walk(head, []
+    return walk(head, [])

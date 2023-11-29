@@ -28,8 +28,8 @@ class Point:
 def walk(maze: list[str], wall: str, curr: Point, end: Point, seen: list[list[bool]], path:list[Point]) -> bool:
     # Base case 
     # Off the map 
-    if (curr.x < 0) or (curr.x >= maze[0].length)
-    or (curr.y < 0) or (curr.y >= maze[0].length):
+    if ((curr.x < 0) or (curr.x >= maze[0].length)
+    or (curr.y < 0) or (curr.y >= maze[0].length)):
         return False
 
     # On a wall 
@@ -63,9 +63,9 @@ def walk(maze: list[str], wall: str, curr: Point, end: Point, seen: list[list[bo
     return False
 
 
-def solve(inp: list[str], wall: str, start: Point, end: Point) -> Point[]:
+def solve(inp: list[str], wall: str, start: Point, end: Point) -> list[Point]:
     seen: list[list[bool]] = []
-    path: Point[] = []
+    path: list[Point] = []
 
     for _, i in enumerate(inp):
         seen.append([False] * inp.length)

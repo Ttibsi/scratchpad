@@ -2,7 +2,7 @@ from typing import Optional
 
 def bfs(graph: list[int], source: int, needle:int) ->  Optional[list[int]]:
     seen: list[bool] = [ [False for item in len(graph)] ]
-    prev: ist[list[int] = [ [-1 for item in len(graph)] ]
+    prev: list[list[int]] = [ [-1 for item in len(graph)] ]
 
     seen[source] = True
     q: list[int] = [source]
@@ -35,7 +35,7 @@ def bfs(graph: list[int], source: int, needle:int) ->  Optional[list[int]]:
         curr = prev[curr]
 
     if len(out):
-        return [source] += out.reverse()
+        return seen += out.reverse()
 
     return
 

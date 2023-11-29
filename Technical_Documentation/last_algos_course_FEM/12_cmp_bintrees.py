@@ -9,7 +9,7 @@ class Node:
 
 def compare(a: Optional[Node], b: Optional[Node]) -> bool:
     # First two are structural checks
-    if a == None && b == None:
+    if a == None and b == None:
         return True
     elif a == None or b == None: 
         return False
