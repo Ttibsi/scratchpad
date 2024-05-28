@@ -7,7 +7,7 @@
 
 # docker run --rm -ti devenv
 
-FROM ubuntu:latest
+FROM debian:latest
 
 RUN apt-get update && apt-get upgrade -y && \
 apt-get install --no-install-recommends \
@@ -25,14 +25,13 @@ software-properties-common \
 unzip \
 -y \
 && apt-get clean \
-&& add-apt-repository -y ppa:ubuntu-toolchain-r/test \
-&& apt-get install -y "g++-13" \
 && rm -rf /var/lib/apt/lists/*
 
 RUN ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
 RUN eval "$(ssh-agent -s)" &&  ssh-add /root/.ssh/id_rsa
 
-RUN pip install cmake-language-server
+# break-system-packages because of running `pip` at root
+RUN pip install cmake-language-server --break-system-packages 
 
 RUN git clone --depth=1 --branch=v0.10.0 https://github.com/neovim/neovim
 RUN cd neovim && \

@@ -3,7 +3,7 @@ local function basic_config()
 		clipboard = "unnamedplus",
 		expandtab = true,
 		hlsearch = false,
-        inccomand = "split",
+        inccommand = "split",
 		mouse = "",
 		number = true,
 		scrolloff = 5,
