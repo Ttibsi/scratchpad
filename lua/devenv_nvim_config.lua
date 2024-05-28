@@ -3,6 +3,7 @@ local function basic_config()
 		clipboard = "unnamedplus",
 		expandtab = true,
 		hlsearch = false,
+        inccomand = "split",
 		mouse = "",
 		number = true,
 		scrolloff = 5,
@@ -93,6 +94,7 @@ local function cmp_init()
 			{ name = "luasnip" }, --TODO More luasnip stuff
 		}, {
 			{ name = "buffer" },
+			{ name = "path" },
 		}),
 	})
 end

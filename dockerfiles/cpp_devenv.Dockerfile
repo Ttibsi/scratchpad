@@ -34,8 +34,8 @@ RUN eval "$(ssh-agent -s)" &&  ssh-add /root/.ssh/id_rsa
 
 RUN pip install cmake-language-server
 
- RUN git clone --depth=1 --branch=v0.9.5 https://github.com/neovim/neovim
- RUN cd neovim && \
+RUN git clone --depth=1 --branch=v0.10.0 https://github.com/neovim/neovim
+RUN cd neovim && \
 	 make CMAKE_BUILD_TYPE=RelWithDebInfo && \
 	 make install
 RUN rm -rf neovim
