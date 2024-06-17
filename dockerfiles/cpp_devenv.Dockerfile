@@ -7,16 +7,16 @@
 
 # docker run --rm -ti devenv
 
-FROM debian:latest
+FROM ubuntu:latest
 
 RUN apt-get update && apt-get upgrade -y && \
 apt-get install --no-install-recommends \
+clang \
 clangd \
 cmake \
 curl \
 gettext \
 git \
-g++ \
 make \
 ninja-build \
 openssh-server \
