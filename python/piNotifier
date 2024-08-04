@@ -48,7 +48,7 @@ def notifyOwner(changedFiles: List[str]):
     server.starttls()
     server.login(details.username, details.password)
 
-    message = f"Subject: PiShare Weekly Update\n\nUpdated files: ({len(changedFiles)}):\n" + '\n'.join(changedFiles) + "\n\n" + ("Backup Recommended\nsudo mount /dev/sda2 /mnt/Elements && sudo rsync /mnt/PiShare/ /mnt/Elements --progress -zvrutU" if len(changedFiles) > 5 else '')
+    message = f"Subject: PiShare Weekly Update\n\nUpdated files: ({len(changedFiles)}):\n" + '\n'.join(changedFiles) + "\n\n" + ("Backup Recommended\nsudo mount /dev/sda2 /mnt/Elements && sudo rsync /mnt/PiShare/ /mnt/Elements --progress -zvrutU")
 
     server.sendmail(details.username, details.recieve_email, message)
     server.quit()
