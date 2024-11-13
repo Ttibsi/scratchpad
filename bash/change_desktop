@@ -1,10 +1,12 @@
 #!/bin/bash
 
-set -xe
+# set -xe
 
-wallpaper_dir="$HOME/.wallpapers"
+wallpaper_dir="$HOME/.opt/wallpapers"
+log_file="$HOME/.opt/wallpaper_log.txt"
 wallpapers=("$wallpaper_dir"/*)
 random_wallpaper="${wallpapers[RANDOM % ${#wallpapers[@]}]}"
 
+echo "$random_wallpaper" > "$HOME/.opt/wallpaper_log"
 gsettings set org.gnome.desktop.background picture-uri "file://$random_wallpaper"
 gsettings set org.gnome.desktop.background picture-uri-dark "file://$random_wallpaper"

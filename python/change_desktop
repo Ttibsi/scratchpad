@@ -1,0 +1,51 @@
+#!/usr/bin/python3
+import argparse
+import os
+import random
+import subprocess
+from typing import Sequence
+
+def main(argv: Sequence[str]| None = None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--id", type=int)
+
+    args: argparse.Namespace = parser.parse_args(argv)
+
+    wallpapers = os.listdir(os.path.expanduser("~/.opt/wallpapers"))
+    log_file = os.path.expanduser("~/.opt/wallpaper_log")
+
+    if args.id:
+        wallpaper = next(filter(lambda x: str(args.id) in x, wallpapers), None)
+
+        if wallpaper is None:
+            print("Unknown ID")
+            return -1
+    else:
+        wallpaper = random.choice(wallpapers)
+
+    wallpaper_path = os.path.join(os.path.expanduser("~/.opt/wallpapers"), wallpaper)
+
+    with open(log_file, 'a') as log:
+        log.write(wallpaper_path + "\n")
+
+    subprocess.run([
+        "gsettings",
+        "set",
+        "org.gnome.desktop.background",
+        "picture-uri",
+        f"file://{wallpaper_path}"
+    ])
+
+    subprocess.run([
+        "gsettings",
+        "set",
+        "org.gnome.desktop.background",
+        "picture-uri-dark",
+        f"file://{wallpaper_path}"
+    ])
+
+    print(f"Wallpaper set to {wallpaper_path}")
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())
