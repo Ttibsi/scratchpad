@@ -7,25 +7,23 @@
 
 # docker run --rm -ti devenv
 
-FROM ubuntu:latest
+FROM fedora:40
 
-RUN apt-get update && apt-get upgrade -y && \
-apt-get install --no-install-recommends \
+#RUN apt-get update && apt-get upgrade -y && \
+#apt-get install --no-install-recommends \
+RUN dnf update -y && dnf install \
 clang \
-clangd \
+clang-tools-extra \
 cmake \
-curl \
 gettext \
 git \
+glibc-gconv-extra \
 make \
 ninja-build \
 openssh-server \
 python3-pip \
-software-properties-common \
 unzip \
--y \
-&& apt-get clean \
-&& rm -rf /var/lib/apt/lists/*
+-y
 
 RUN ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
 RUN eval "$(ssh-agent -s)" &&  ssh-add /root/.ssh/id_rsa
@@ -33,10 +31,11 @@ RUN eval "$(ssh-agent -s)" &&  ssh-add /root/.ssh/id_rsa
 # break-system-packages because of running `pip` at root
 RUN pip install cmake-language-server --break-system-packages 
 
-RUN git clone --depth=1 --branch=v0.10.0 https://github.com/neovim/neovim
+RUN git clone --depth=1 --branch=v0.10.2 https://github.com/neovim/neovim
 RUN cd neovim && \
-	 make CMAKE_BUILD_TYPE=RelWithDebInfo && \
-	 make install
+make CMAKE_BUILD_TYPE=RelWithDebInfo && \
+make install
+
 RUN rm -rf neovim
 RUN mkdir -p /root/.config/nvim workspace /root/.ssh
 RUN git clone --depth=1 https://github.com/savq/paq-nvim.git \
