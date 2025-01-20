@@ -15,6 +15,7 @@ RUN dnf update -y && dnf install \
 clang \
 clang-tools-extra \
 cmake \
+file \
 gettext \
 git \
 glibc-gconv-extra \
