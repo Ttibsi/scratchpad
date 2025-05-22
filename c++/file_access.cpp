@@ -7,8 +7,8 @@
 int main(int argc, char** argv) {
     for (int i = 1; i < argc; i++) {
         // man access
-        access(argv[i], W_OK); // switch to R_OK for read access
-        std::cout << argv[i] << ": " << strerror(errno) << "\n";
+        int ret = access(argv[i], W_OK); // switch to R_OK for read access
+        std::cout << argv[i] << ": " << strerror(errno) << "(" << ret << ")\n";
     }
 
     return 0;
