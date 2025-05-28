@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+import argparse
+import subprocess
+
+def get_merged_branches(main_branch: str) -> list[str]:
+    out = subprocess.check_output([
+        'git', 'branch', '--merged', main_branch
+    ], text=True)
+    branches = [line.strip().lstrip('* ') for line in out.splitlines()]
+    return [b for b in branches if b != main_branch]
+
+def delete_branch(branch: str) -> None:
+    subprocess.run(['git', 'branch', '-d', branch], check=True)
+
+def prune_remote_branches() -> None:
+    subprocess.run(['git', 'fetch', '--prune'], check=True)
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dry-run', action='store_true', help='Only print branches to be deleted')
+    parser.add_argument('--main-branch', default='main', help='Name of the main branch (default: main)')
+    args = parser.parse_args()
+
+    try:
+        merged = get_merged_branches(args.main_branch)
+    except subprocess.CalledProcessError as e:
+        print(f'Error: {e}')
+        return
+
+    for branch in merged:
+        print(branch)
+
+    print(f"\n{len(merged)} branch(es) {'would be removed' if args.dry_run else 'removed'}.")
+
+    if not args.dry_run:
+        for branch in merged:
+            delete_branch(branch)
+        prune_remote_branches()
+
+if __name__ == '__main__':
+    raise SystemExit(main())
