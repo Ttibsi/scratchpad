@@ -22,10 +22,12 @@ neovim \
 ninja-build \
 openssh-server \
 python3-pip \
+tmux \
 unzip \
 -y
 
 RUN useradd -ms /bin/bash admin
+RUN echo "admin:admin" | chpasswd
 USER admin
 WORKDIR /home/admin
 
@@ -33,13 +35,14 @@ RUN mkdir .ssh
 RUN ssh-keygen -b 2048 -t rsa -f /home/admin/.ssh/id_rsa -q -N ""
 RUN eval "$(ssh-agent -s)" &&  ssh-add /home/admin/.ssh/id_rsa
 
-RUN pip install cmake-language-server
+RUN pip install cmake-language-server pre-commit
 
 RUN mkdir -p .config/nvim workspace
 RUN git clone --depth=1 https://github.com/savq/paq-nvim.git \
-    "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/pack/paqs/start/paq-nvim
+    /home/admin/.local/share/nvim/site/pack/paqs/start/paq-nvim
 
 COPY lua/devenv_nvim_config.lua .config/nvim/init.lua
-RUN nvim --headless -c 'PaqInstall' +q
+# Better off running this manually on first entry, i find
+# RUN nvim --headless -c 'PaqInstall' +q
 
 WORKDIR workspace
