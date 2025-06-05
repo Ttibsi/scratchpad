@@ -7,10 +7,8 @@
 
 # docker run --rm -ti devenv
 
-FROM fedora:40
+FROM fedora:41
 
-#RUN apt-get update && apt-get upgrade -y && \
-#apt-get install --no-install-recommends \
 RUN dnf update -y && dnf install \
 clang \
 clang-tools-extra \
@@ -20,29 +18,28 @@ gettext \
 git \
 glibc-gconv-extra \
 make \
+neovim \
 ninja-build \
 openssh-server \
 python3-pip \
 unzip \
 -y
 
-RUN ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
-RUN eval "$(ssh-agent -s)" &&  ssh-add /root/.ssh/id_rsa
+RUN useradd -ms /bin/bash admin
+USER admin
+WORKDIR /home/admin
 
-# break-system-packages because of running `pip` at root
-RUN pip install cmake-language-server --break-system-packages 
+RUN mkdir .ssh
+RUN ssh-keygen -b 2048 -t rsa -f /home/admin/.ssh/id_rsa -q -N ""
+RUN eval "$(ssh-agent -s)" &&  ssh-add /home/admin/.ssh/id_rsa
 
-RUN git clone --depth=1 --branch=v0.10.2 https://github.com/neovim/neovim
-RUN cd neovim && \
-make CMAKE_BUILD_TYPE=RelWithDebInfo && \
-make install
+RUN pip install cmake-language-server
 
-RUN rm -rf neovim
-RUN mkdir -p /root/.config/nvim workspace /root/.ssh
+RUN mkdir -p .config/nvim workspace
 RUN git clone --depth=1 https://github.com/savq/paq-nvim.git \
     "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/pack/paqs/start/paq-nvim
 
-COPY lua/devenv_nvim_config.lua /root/.config/nvim/init.lua
+COPY lua/devenv_nvim_config.lua .config/nvim/init.lua
 RUN nvim --headless -c 'PaqInstall' +q
 
-WORKDIR /workspace
+WORKDIR workspace
