@@ -14,6 +14,7 @@ clang \
 clang-tools-extra \
 cmake \
 file \
+gdb \
 gettext \
 git \
 glibc-gconv-extra \
@@ -28,6 +29,7 @@ unzip \
 
 RUN useradd -ms /bin/bash admin
 RUN echo "admin:admin" | chpasswd
+RUN usermod -aG wheel admin
 USER admin
 WORKDIR /home/admin
 
