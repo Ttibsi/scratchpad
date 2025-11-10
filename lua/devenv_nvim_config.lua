@@ -38,9 +38,9 @@ local function custom_commands()
 	vim.keymap.set("n", "<leader>p", ":put+<CR>", {})
 
 	-- Tabs
-	vim.keymap.set("n", "<leader>t", ":tabnew<CR>", {})
-	vim.keymap.set("n", "<leader>n", ":tabnext<CR>", {})
-	vim.keymap.set("n", "<leader>N", ":tabprev<CR>", {})
+	vim.keymap.set("n", "tt", ":tabnew<CR>", {})
+	vim.keymap.set("n", "tn", ":tabnext<CR>", {})
+	vim.keymap.set("n", "tp", ":tabprev<CR>", {})
 
 	-- Splits
 	vim.keymap.set("n", "<leader>s", ":new<CR>")
