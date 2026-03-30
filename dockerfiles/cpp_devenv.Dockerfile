@@ -41,7 +41,7 @@ RUN eval "$(ssh-agent -s)" &&  ssh-add /home/admin/.ssh/id_rsa
 RUN pip install cmake-language-server pre-commit
 
 RUN mkdir -p .config/nvim workspace
-COPY lua/minimal_nvim.lua .config/nvim/init.lua
+COPY lua/devenv_nvim_config.lua .config/nvim/init.lua
 
 WORKDIR workspace
 
