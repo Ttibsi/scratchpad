@@ -34,7 +34,7 @@ vim.g.netrw_liststyle = 3
 
 -- vim.lsp.enable("foo")
 
-vim.keymap.set('n', "<leader>y", '"+y')
+vim.keymap.set('v', "<leader>y", '"+y')
 vim.keymap.set('n', "<leader>p", ':put+<CR>')
 vim.keymap.set('n', 'tt', ':tabnew<CR>')
 vim.keymap.set('n', 'tn', ':tabnext<CR>')
@@ -49,11 +49,13 @@ vim.keymap.set('n', '<leader>e', ":Ex<CR>")
 vim.keymap.set('n', 'q:', "")
 vim.keymap.set('v', "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set('v', "K", ":m '<-2<CR>gv=gv")
+vim.keymap.set('n', '<leader>q', ':ccl<CR>')
 
 -- find
 vim.o.path="**"
 vim.keymap.set('n', '<leader>f', ':find ')
 
+vim.o.grepprg = "grep -rn "
 vim.cmd(":command! -nargs=+ Grep execute 'silent grep! <args>' | copen")
 vim.keymap.set('n', '<leader>g', ':Grep ')
 
