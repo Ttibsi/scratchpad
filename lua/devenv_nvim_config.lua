@@ -32,7 +32,8 @@ vim.g.netrw_banner = 0
 vim.g.netrw_winsize = 25
 vim.g.netrw_liststyle = 3
 
--- vim.lsp.enable("foo")
+vim.lsp.enable("clangd")
+vim.lsp.enable("basedpyright")
 
 vim.keymap.set('v', "<leader>y", '"+y')
 vim.keymap.set('n', "<leader>p", ':put+<CR>')
