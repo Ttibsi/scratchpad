@@ -7,19 +7,20 @@
 
 # docker run --rm -ti devenv
 
-FROM fedora:41
+FROM fedora:44
 
 RUN dnf update -y && dnf install \
 clang \
 clang-tools-extra \
 cmake \
+curl \
 file \
 gdb \
+gcc \
 gettext \
 git \
 glibc-gconv-extra \
 make \
-neovim \
 ninja-build \
 openssh-server \
 python3-pip \
@@ -40,11 +41,19 @@ RUN eval "$(ssh-agent -s)" &&  ssh-add /home/admin/.ssh/id_rsa
 RUN pip install cmake-language-server pre-commit
 
 RUN mkdir -p .config/nvim workspace
-RUN git clone --depth=1 https://github.com/savq/paq-nvim.git \
-    /home/admin/.local/share/nvim/site/pack/paqs/start/paq-nvim
-
 COPY lua/devenv_nvim_config.lua .config/nvim/init.lua
-# Better off running this manually on first entry, i find
-# RUN nvim --headless -c 'PaqInstall' +q
 
 WORKDIR workspace
+
+# build nvim from scratch
+RUN git clone https://github.com/neovim/neovim
+WORKDIR neovim
+RUN git checkout v0.12.0
+RUN make CMAKE_BUILD_TYPE=RelWithDebInfo
+
+USER root
+RUN make install
+USER admin
+
+WORKDIR ..
+RUN rm -rf neovim
