@@ -4,7 +4,6 @@ vim.o.hlsearch = false
 vim.o.wrap = false
 vim.o.inccommand = "split"
 vim.o.smartcase = true
-vim.o.showmode = false
 vim.o.expandtab = true
 vim.o.smartindent = true
 vim.o.shiftwidth = 4
@@ -50,7 +49,7 @@ vim.keymap.set('n', '<leader>e', ":Ex<CR>")
 vim.keymap.set('n', 'q:', "")
 vim.keymap.set('v', "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set('v', "K", ":m '<-2<CR>gv=gv")
-vim.keymap.set('n', '<leader>q', ':ccl<CR>')
+vim.keymap.set('n', '<leader>q', ':ccl<CR>:lcl<CR>')
 vim.keymap.set('n', '<leader>w', ':lua vim.diagnostic.open_float()<CR>')
 
 -- find
