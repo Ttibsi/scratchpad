@@ -24,6 +24,7 @@ vim.pack.add {
     "https://github.com/neovim/nvim-lspconfig",
     "https://github.com/nvim-lua/plenary.nvim",
 }
+require('blame').setup()
 
 vim.cmd.colorscheme("gruber-darker")
 
@@ -62,7 +63,10 @@ vim.cmd(":command! -nargs=+ Grep execute 'silent grep! <args>' | copen")
 vim.keymap.set('n', '<leader>g', ':Grep ')
 
 -- Compile_mode.nvim
-vim.g.compile_mode = {}
+vim.g.compile_mode = {
+    default_command = "make",
+    focus_compilation_buffer = true
+}
 vim.keymap.set('n', '<leader>c', ":Compile<CR>")
 
 -- buffers
@@ -80,4 +84,3 @@ vim.keymap.set('n', '<leader>b', function()
     vim.fn.setloclist(0, {}, ' ', { title = 'Buffers', items = items })
     if #items > 0 then vim.cmd('lopen') end
 end)
-
