@@ -51,7 +51,7 @@ vim.keymap.set('n', '<leader>e', ":Ex<CR>")
 vim.keymap.set('n', 'q:', "")
 vim.keymap.set('v', "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set('v', "K", ":m '<-2<CR>gv=gv")
-vim.keymap.set('n', '<leader>q', ':ccl<CR>')
+vim.keymap.set('n', '<leader>q', ':ccl<CR>:lcl<CR>')
 vim.keymap.set('n', '<leader>w', ':lua vim.diagnostic.open_float()<CR>')
 
 -- find
